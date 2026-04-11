@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Medrutina",
+    "slug": "movil-1",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/medicamento.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/pastillas.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f1f5f9"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/medicamento.png",
+        "backgroundColor": "#f1f5f9"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-sqlite"
+    ]
+  }
+}
