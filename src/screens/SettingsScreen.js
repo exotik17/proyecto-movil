@@ -18,7 +18,7 @@ const SettingsScreen = () => {
            ]);
         } catch (error) {
             console.log("Error al cerrar sesión: ", error);
-            Alert.alert("Error al cerrar sesión 😢", "Intenta de nuevo más tarde");
+            Alert.alert("Error al cerrar sesión ...😢", "Intenta de nuevo más tarde");
         } finally {
             setLoading(false);
         }
