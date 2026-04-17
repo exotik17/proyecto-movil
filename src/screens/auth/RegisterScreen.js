@@ -93,7 +93,9 @@ const RegisterScreen = () => {
     return (
         <LinearGradient colors={colors.gradientePrimario} style={styles.container}>
             <View style={styles.formContainer}>
-                <Text style={styles.title}>Registro</Text>
+                <Ionicons name="medkit-outline" size={50} color={colors.iluminado} style={{marginBottom: 10}} />
+                <Text style={styles.title}>Únete a MedRutina</Text>
+                <Text style={styles.subtitle}>Comienza a cuidar de ti</Text>
                 
                 <View style={styles.inputContainer}>
                     <Ionicons name="person-outline" size={24} color={colors.iluminado} />
@@ -175,10 +177,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 28,
+        fontSize: 26,
         fontWeight: 'bold',
         color: colors.iluminado,
-        marginBottom: 30,
+        marginBottom: 5,
+        textAlign: 'center',
+    },
+    subtitle: {
+        fontSize: 16,
+        color: colors.suave,
+        marginBottom: 25,
+        textAlign: 'center',
     },
     inputContainer: {
         flexDirection: 'row',

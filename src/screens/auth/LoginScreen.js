@@ -69,7 +69,9 @@ const LoginScreen = () => {
     return (
         <LinearGradient colors={colors.gradientePrimario} style={styles.container}>
             <View style={styles.formContainer}>
-                <Text style={styles.title}>Iniciar Sesión</Text>
+                <Ionicons name="medkit-outline" size={60} color={colors.iluminado} style={{marginBottom: 10}} />
+                <Text style={styles.title}>MedRutina</Text>
+                <Text style={styles.subtitle}>Tu salud, bajo control</Text>
                 
                 <View style={styles.inputContainer}>
                     <Ionicons name="mail-outline" size={24} color={colors.iluminado} />
@@ -126,10 +128,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: 'bold',
         color: colors.iluminado,
+        marginBottom: 5,
+    },
+    subtitle: {
+        fontSize: 16,
+        color: colors.suave,
         marginBottom: 30,
+        textAlign: 'center',
     },
     inputContainer: {
         flexDirection: 'row',
