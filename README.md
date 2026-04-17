@@ -8,9 +8,3 @@ Es una app móvil construida con React Native y Expo que permite registrar
 medicamentos, programar recordatorios, llevar el conteo del stock disponible
 y revisar qué tan seguido se están tomando las dosis. Todo funciona de forma
 local, sin cuentas ni servidores.
-
-## Stack
-- React Native + Expo (managed workflow)
-- SQLite local con Drizzle ORM
-- Notificaciones locales con expo-notifications
-- Gráficas con Victory Native
