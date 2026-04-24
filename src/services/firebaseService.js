@@ -34,3 +34,5 @@ export {
   createUserWithEmailAndPassword,
   signOut
 };
+
+export default app;

@@ -14,6 +14,7 @@ import LoginScreen from '../src/screens/auth/LoginScreen';
 import HomeScreen from '../src/screens/HomeScreen';
 import UserScreen from '../src/screens/UserScreen';
 import SettingsScreen from '../src/screens/SettingsScreen';
+import AddMedicationScreen from '../src/screens/AddMedicationScreen';
 
 const AuthContext = createContext({});
 
@@ -97,7 +98,10 @@ const AppNavigator = () => {
         <AuthContext.Provider value={authContextValue}>
             <Stack.Navigator initialRouteName={user ? 'Main' : 'Login'}>
                 {user ? (
-                    <Stack.Screen name="Main" component={TabNavigator} options={{headerShown: false}} />
+                    <>
+                        <Stack.Screen name="Main" component={TabNavigator} options={{headerShown: false}} />
+                        <Stack.Screen name="AddMedication" component={AddMedicationScreen} options={{headerShown: false, presentation: 'modal'}} />
+                    </>
                 ) : (
                     <>
                         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
