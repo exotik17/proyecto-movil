@@ -12,7 +12,7 @@ import { getContacts } from "../services/contactService";
 const UserScreen = ({navigation}) => {
 
     const user = auth.currentUser;
-    const [imageuri, setimageuri] = useState(null);
+    const [imageUri, setImageUri] = useState(null);
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [selectImage, setSelectImage] = useState(null);
@@ -27,10 +27,10 @@ const UserScreen = ({navigation}) => {
             try {
                const firestoreUserData = await getUserData(currentUser.uid);
                setUserData(firestoreUserData);
-               setimageuri(firestoreUserData?.photoURL || currentUser.photoURL || defaultImage);
+               setImageUri(firestoreUserData?.photoURL || currentUser.photoURL || defaultImage);
             } catch (error) {
                 console.error("Error al obtener perfil (silencioso):", error);
-                setimageuri(currentUser.photoURL || defaultImage);
+                setImageUri(currentUser.photoURL || defaultImage);
             }
         }
     }, [defaultImage]);
@@ -77,7 +77,7 @@ const UserScreen = ({navigation}) => {
             const imageUrl = await uploadImageToCloudinary(selectImage.uri);
             await updateUserProfilePhoto(user.uid, imageUrl);
 
-            setimageuri(imageUrl);
+            setImageUri(imageUrl);
 
             setSelectImage(null);
             Alert.alert("Éxito", "Tu foto de perfil ha sido actualizada.");
@@ -96,11 +96,15 @@ const UserScreen = ({navigation}) => {
             <View style={styles.container}>
             {/* Cabecera del Perfil */}
             <View style={styles.header}>
-                <View style={styles.avatarContainer}>
-                    <Ionicons name="person" size={60} color={colors.iluminado} />
+                <View style={[styles.avatarContainer, imageUri ? { backgroundColor: 'transparent' } : {}]}>
+                    {imageUri ? (
+                        <Image source={{uri: imageUri}} style={{width: 100, height: 100, borderRadius: 50}} resizeMode="cover" />
+                    ) : (
+                        <Ionicons name="person" size={60} color={colors.iluminado} />
+                    )}
                 </View>
-                <Text style={styles.userName}>Mi Perfil</Text>
-                <Text style={styles.userEmail}>usuario@correo.com</Text>
+                <Text style={styles.userName}>{user?.displayName || 'Mi Perfil'}</Text>
+                <Text style={styles.userEmail}>{user?.email || 'Sin correo registrado'}</Text>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -145,9 +149,9 @@ const UserScreen = ({navigation}) => {
                             style={{width: 120, height: 120, borderRadius: 60, marginBottom: 10}} 
                             resizeMode="cover"
                         />
-                    ) : imageuri ? (
+                    ) : imageUri ? (
                         <Image 
-                            source={{uri: imageuri}} 
+                            source={{uri: imageUri}} 
                             style={{width: 120, height: 120, borderRadius: 60, marginBottom: 10}} 
                             resizeMode="cover"
                         />

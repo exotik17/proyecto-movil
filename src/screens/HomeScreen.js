@@ -51,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.header}>
                 <View>
                     <Text style={styles.greeting}>Hola,</Text>
-                    <Text style={styles.userName}>{auth.currentUser?.email || 'Usuario'}</Text>
+                    <Text style={styles.userName}>{auth.currentUser?.displayName || auth.currentUser?.email || 'Usuario'}</Text>
                 </View>
                 <TouchableOpacity style={styles.profileIcon} onPress={() => navigation.navigate("User")}>
                     <Ionicons name="person-circle-outline" size={40} color={colors.variante1} />

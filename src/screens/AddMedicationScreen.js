@@ -24,14 +24,23 @@ const AddMedicationScreen = ({ navigation }) => {
             return;
         }
 
+        const parsedStock = parseInt(stock, 10);
+        const parsedAlert = parseInt(alertThreshold, 10);
+        const parsedFrequency = parseInt(frequency, 10);
+
+        if (isNaN(parsedStock) || isNaN(parsedAlert) || isNaN(parsedFrequency) || parsedStock < 0 || parsedAlert < 0 || parsedFrequency <= 0) {
+            Alert.alert('Datos inválidos', 'El stock, frecuencia y umbral deben ser números positivos válidos.');
+            return;
+        }
+
         try {
             const data = {
                 userId: user.uid,
                 name: name.trim(),
                 dosage: dosage.trim(),
-                frequency: frequency.trim(),
-                stock: parseInt(stock, 10),
-                alertThreshold: parseInt(alertThreshold, 10),
+                frequency: parsedFrequency.toString(),
+                stock: parsedStock,
+                alertThreshold: parsedAlert,
             };
 
             addMedication(data);
