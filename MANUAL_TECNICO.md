@@ -80,4 +80,3 @@ Para iniciar el proyecto en desarrollo local:
 npm install
 npx expo start
 ```
-Se recomienda testear en un dispositivo físico usando Expo Go.

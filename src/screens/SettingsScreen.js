@@ -1,13 +1,47 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../constants/colors";
 import { signOut, auth } from "../services/firebaseService";
 import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "../context/ThemeContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsScreen = () => {
     const navigation = useNavigation();
+    const { colors, isDarkMode, toggleTheme } = useTheme();
+    const styles = getStyles(colors);
+    
     const [loading, setLoading] = useState(false);
+    const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+    useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const notifs = await AsyncStorage.getItem('notifications');
+                if (notifs !== null) {
+                    setNotificationsEnabled(notifs === 'true');
+                }
+            } catch (e) {
+                console.error("Error loading settings", e);
+            }
+        };
+        loadSettings();
+    }, []);
+
+    const toggleNotifications = async () => {
+        const newValue = !notificationsEnabled;
+        setNotificationsEnabled(newValue);
+        try {
+            await AsyncStorage.setItem('notifications', newValue.toString());
+            if (newValue) {
+                Alert.alert("Notificaciones", "Las notificaciones han sido activadas.");
+            } else {
+                Alert.alert("Notificaciones", "Las notificaciones han sido desactivadas.");
+            }
+        } catch (error) {
+            console.error("Error saving notifications preference", error);
+        }
+    };
 
     const handleLogout = async() => {
         try {
@@ -24,15 +58,24 @@ const SettingsScreen = () => {
         }
     };
 
-    const DummyOption = ({ icon, title }) => (
-        <TouchableOpacity style={styles.optionRow}>
+    const SettingOption = ({ icon, title, onPress, value, type = 'chevron' }) => (
+        <TouchableOpacity style={styles.optionRow} onPress={onPress} disabled={type === 'switch' && !onPress}>
             <View style={styles.optionLeft}>
                 <View style={styles.iconContainer}>
                     <Ionicons name={icon} size={22} color={colors.variante2} />
                 </View>
                 <Text style={styles.optionTitle}>{title}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.subtitilo} />
+            {type === 'switch' ? (
+                <Switch 
+                    value={value} 
+                    onValueChange={onPress} 
+                    trackColor={{ false: colors.subtitilo, true: colors.variante2 }}
+                    thumbColor={colors.iluminado}
+                />
+            ) : (
+                <Ionicons name="chevron-forward" size={20} color={colors.subtitilo} />
+            )}
         </TouchableOpacity>
     );
 
@@ -46,23 +89,29 @@ const SettingsScreen = () => {
                 
                 <Text style={styles.sectionHeader}>Preferencias</Text>
                 <View style={styles.card}>
-                    <DummyOption icon="notifications-outline" title="Notificaciones" />
+                    <SettingOption 
+                        icon="notifications-outline" 
+                        title="Notificaciones" 
+                        type="switch" 
+                        value={notificationsEnabled} 
+                        onPress={toggleNotifications} 
+                    />
                     <View style={styles.divider} />
-                    <DummyOption icon="volume-high-outline" title="Sonidos de alarma" />
+                    <SettingOption icon="volume-high-outline" title="Sonidos de alarma" />
                     <View style={styles.divider} />
-                    <DummyOption icon="moon-outline" title="Modo Oscuro" />
+                    <SettingOption 
+                        icon="moon-outline" 
+                        title="Modo Oscuro" 
+                        type="switch" 
+                        value={isDarkMode} 
+                        onPress={toggleTheme} 
+                    />
                 </View>
 
-                <Text style={styles.sectionHeader}>Base de Datos</Text>
-                <View style={styles.card}>
-                    <DummyOption icon="sync-outline" title="Sincronizar Datos" />
-                    <View style={styles.divider} />
-                    <DummyOption icon="download-outline" title="Exportar Historial Médicos" />
-                </View>
 
                 <Text style={styles.sectionHeader}>Cuenta</Text>
                 <View style={styles.card}>
-                    <DummyOption icon="lock-closed-outline" title="Cambiar Contraseña" />
+                    <SettingOption icon="lock-closed-outline" title="Cambiar Contraseña" />
                     <View style={styles.divider} />
                     <TouchableOpacity style={styles.optionRow} onPress={handleLogout} disabled={loading}>
                         <View style={styles.optionLeft}>
@@ -81,7 +130,7 @@ const SettingsScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.principal,

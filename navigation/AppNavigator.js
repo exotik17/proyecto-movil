@@ -16,6 +16,8 @@ import UserScreen from '../src/screens/UserScreen';
 import SettingsScreen from '../src/screens/SettingsScreen';
 import AddMedicationScreen from '../src/screens/AddMedicationScreen';
 
+import AddContactScreen from '../src/screens/AddContactScreen';
+
 const AuthContext = createContext({});
 
 export const useAuth = () => useContext(AuthContext);
@@ -101,6 +103,7 @@ const AppNavigator = () => {
                     <>
                         <Stack.Screen name="Main" component={TabNavigator} options={{headerShown: false}} />
                         <Stack.Screen name="AddMedication" component={AddMedicationScreen} options={{headerShown: false, presentation: 'modal'}} />
+                        <Stack.Screen name="AddContact" component={AddContactScreen} options={{headerShown: false, presentation: 'modal'}} />
                     </>
                 ) : (
                     <>

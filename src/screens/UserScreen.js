@@ -6,7 +6,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { auth } from "../services/firebaseService";
 import { getUserData, updateUserProfilePhoto } from "../services/userService";
 import { pickImage, uploadImageToCloudinary } from "../services/cloudinaryService";
-import { getAdherenceLogs } from "../services/medicationService";
+import { getAdherenceLogs, getMedications, getAdherenceLogsToday } from "../services/medicationService";
 import { getContacts } from "../services/contactService";
 
 const UserScreen = ({navigation}) => {
@@ -19,6 +19,8 @@ const UserScreen = ({navigation}) => {
     const [showPreview, setShowPreview] = useState(false);
     const [logs, setLogs] = useState([]);
     const [contacts, setContacts] = useState([]);
+    const [medications, setMedications] = useState([]);
+    const [dosesToday, setDosesToday] = useState({});
     const defaultImage = "https://ui-avatars.com/api/?name=Usuario&background=0D8ABC&color=fff&size=200";
 
     const fetchUserProfile = useCallback(async () => {
@@ -40,6 +42,14 @@ const UserScreen = ({navigation}) => {
         if (currentUser) {
             setLogs(getAdherenceLogs(currentUser.uid));
             setContacts(getContacts(currentUser.uid));
+            setMedications(getMedications(currentUser.uid));
+
+            const todayLogs = getAdherenceLogsToday(currentUser.uid);
+            const counts = {};
+            todayLogs.forEach(log => {
+                counts[log.medicationId] = (counts[log.medicationId] || 0) + 1;
+            });
+            setDosesToday(counts);
         }
     }, []);
 
@@ -111,15 +121,54 @@ const UserScreen = ({navigation}) => {
                 
                 {/* Sección de Adherencia */}
                 <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Adherencia a Tratamientos</Text>
+                    <Text style={styles.sectionTitle}>Progreso de hoy</Text>
                     <Ionicons name="stats-chart-outline" size={20} color={colors.variante3} />
                 </View>
-                
-                <View style={styles.emptyStateCard}>
-                    <Ionicons name="pie-chart-outline" size={48} color={logs.length > 0 ? colors.variante1 : colors.subtitilo} />
-                    <Text style={styles.emptyStateTitle}>{logs.length > 0 ? `${logs.length} Dosis Registradas` : "Aún no hay datos"}</Text>
-                    <Text style={styles.emptyStateText}>{logs.length > 0 ? "Sigue así, llevar control preciso de tu medicina te da mejor salud." : "Comienza a registrar y tomar tus medicamentos."}</Text>
-                </View>
+
+                {(() => {
+                    let totalDoses = 0;
+                    let takenDoses = 0;
+                    medications.forEach(med => {
+                        const max = parseInt(med.frequency, 10) || 1;
+                        totalDoses += max;
+                        takenDoses += Math.min(dosesToday[med.id] || 0, max);
+                    });
+                    const pct = totalDoses === 0 ? 0 : Math.round((takenDoses / totalDoses) * 100);
+
+                    return (
+                        <View style={styles.summaryCard}>
+                            <View style={styles.summaryHeaderRow}>
+                                <Text style={styles.summaryLabel}>Dosis tomadas hoy</Text>
+                                <Text style={styles.summaryPct}>{pct}%</Text>
+                            </View>
+                            <View style={styles.progressBarBg}>
+                                <View style={[styles.progressBarFill, { width: `${pct}%` }]} />
+                            </View>
+                            <Text style={styles.summarySubtext}>{takenDoses} de {totalDoses} dosis programadas</Text>
+
+                            {medications.length > 0 && (
+                                <View style={{ marginTop: 16 }}>
+                                    {medications.map(med => {
+                                        const max = parseInt(med.frequency, 10) || 1;
+                                        const taken = Math.min(dosesToday[med.id] || 0, max);
+                                        const medPct = Math.round((taken / max) * 100);
+                                        return (
+                                            <View key={med.id} style={{ marginBottom: 10 }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                                    <Text style={{ fontSize: 14, color: colors.oscuro, fontWeight: '600' }}>{med.name}</Text>
+                                                    <Text style={{ fontSize: 13, color: colors.subtitilo }}>{taken}/{max}</Text>
+                                                </View>
+                                                <View style={styles.progressBarBg}>
+                                                    <View style={[styles.progressBarFill, { width: `${medPct}%`, backgroundColor: medPct >= 100 ? colors.exito : colors.variante3 }]} />
+                                                </View>
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            )}
+                        </View>
+                    );
+                })()}
 
                 {/* Sección de Médicos/Contactos */}
                 <View style={styles.sectionHeader}>
@@ -274,6 +323,23 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         lineHeight: 20,
     },
+    summaryCard: {
+        backgroundColor: colors.iluminado,
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 25,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    summaryHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10 },
+    summaryLabel: { fontSize: 16, fontWeight: '600', color: colors.oscuro },
+    summaryPct: { fontSize: 26, fontWeight: 'bold', color: colors.variante2 },
+    progressBarBg: { height: 10, backgroundColor: colors.principal, borderRadius: 5, overflow: 'hidden', marginBottom: 8 },
+    progressBarFill: { height: '100%', backgroundColor: colors.variante2, borderRadius: 5 },
+    summarySubtext: { fontSize: 13, color: colors.subtitilo },
 });
 
 

@@ -39,3 +39,8 @@ export const getAdherenceLogsToday = (userId) => {
     return db.getAllSync('SELECT * FROM adherence_logs WHERE userId = ? AND timestamp LIKE ?', [userId, `${today}%`]);
 };
 
+export const updateMedicationStock = (medicationId, newStock) => {
+    const db = getDB();
+    const result = db.runSync('UPDATE medications SET stock = ? WHERE id = ?', [newStock, medicationId]);
+    return result.changes;
+};
